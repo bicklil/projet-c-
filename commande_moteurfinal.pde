@@ -8,7 +8,7 @@
 #define IN3 8 //Connecté à Arduino pin 8
 #define IN4 9 //Connecté à Arduino pin 9
 
-
+void ControleMoteur ( int num, int sens, int vitesse );
 // fonctionde recuperation du clavier 
 
 int moteur()
@@ -24,7 +24,7 @@ int moteur()
 
 // fonction moteur 1 et 2
 
-void ControleMoteur ( long num, long sens, long vitesse )
+void ControleMoteur ( int num, int sens, int vitesse )
   {
     if (num == 1)
     {
