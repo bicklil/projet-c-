@@ -43,21 +43,31 @@ cercle* supprimerCercle(cercle* actuel,cercle* premier)
 
 }
 
-IplImage* openVideo()
+IplImage* captureImage(cvCapture* capture)
 {
 	IplImage* ptImage = 0; // Pointeur sur une image OpenCV
-	ptImage = cvLoadImage("blanc.jpg",0);
+	ptImage = cvQueryFrame(capture);
 	if(!ptImage)
 	{
 		printf("Impossible d'ouvrir l'image");
 		exit(0);
 	}
-
-
 	return ptImage;
 }
 
-
+CvCapture* loadVideo()
+{
+    cvCapture* capture=NULL;
+    while(!capture)
+    {
+        capture=cvCreateCameraCapture(); // mettre l'adresse de la video connait pas
+        if (!capture)
+        {
+            printf("Ouverture du flux vidéo impossible !\n");
+        }
+    }
+    return capture;
+}
 void createCircleRandomp(IplImage* image)
 {
 	int hauteur,largeur;
@@ -98,24 +108,25 @@ void modifColorandsizeCircle(cercle* ptcercle)
 int main(void)
 {
 	int i = 0;
+	cvCapture* ptvideo;
+	IplImage* ptImage;
+
 	srand(time(NULL)); // initialisation de rand
-	IplImage* ptImage=openImage();
-	// Affichage graphique de l'image
-	cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE);
+	ptvideo=loadVideo;
+    cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE);
 	cvMoveWindow("Image originale", 50, 500);
-	cvShowImage("Image originale", ptImage);
 
 	while(i<25)
-	{
-		createCircleRandomp(ptImage);
-		choix=cvWaitKey(1000); // récupère la touche entrée par l'utilisateur
-		i=i+1;
-		cvShowImage("Image originale", ptImage);
+    {
+        ptImage=captureImage(ptvideo);
+        createCircleRandomp(ptImage);
+        cvShowImage("Image originale", ptImage);
+        cvWaitKey(1000);
+        i=i+1;
+    }
 
-	}
-
-	// Libération de l'image.
 	cvReleaseImage(&ptImage);
+	cvReleaseCapture(&capture);
 
 	return 0;
 }
