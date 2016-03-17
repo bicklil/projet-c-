@@ -22,9 +22,24 @@ cercle* ajoutCercle(cercle* premier,cercle* actuel)
     return actuel;
 }
 
-cercle* supprimerCercle(cercle* actuel)
+cercle* supprimerCercle(cercle* actuel,cercle* premier)
 // supprime le cercle de la chaine
 {
+    if (actuel->precedent == NULL)
+    {
+        (actuel->suivant)->precedent=NULL;
+        premier=actuel->suivant;
+        return premier;
+    }
+    if (actuel->suivant == NULL)
+    {
+        (actuel->precedent)->suivant=NULL;
+        free(actuel);
+        return premier;
+    }
+    (actuel->suivant)->precedent=actuel->precedent;
+    (actuel->precedent)->suivant=actuel->suivant;
+    return premier;
 
 }
 
