@@ -17,7 +17,10 @@ typedef struct {int x;
 cercle* ajoutCercle(cercle* premier,cercle* actuel)
 // on ajoute les nouveux cercles en tete de chaine
 {
-    premier->precedent=actuel;
+    if(premier!=NULL)
+    {
+        premier->precedent=actuel;
+    }
     actuel->suivant=premier;
     return actuel;
 }
@@ -68,7 +71,7 @@ CvCapture* loadVideo()
     }
     return capture;
 }
-void createCircleRandomp(IplImage* image)
+cercle* createCircleRandomp(IplImage* image,cercle* premier)
 {
 	int hauteur,largeur;
 	int aleaLargeur,aleahauteur;
@@ -86,7 +89,7 @@ void createCircleRandomp(IplImage* image)
 	ptcercle->rayon=RAYON;
 	ptcercle->couleur=cvScalar( 0x0, 0x0, 0x0,0 );
 
-	return ptcercle;
+	return ajoutCercle(premier,ptcercle);
 
 }
 
@@ -110,16 +113,19 @@ int main(void)
 	int i = 0;
 	cvCapture* ptvideo;
 	IplImage* ptImage;
+	cercle* premiercercle;
 
 	srand(time(NULL)); // initialisation de rand
 	ptvideo=loadVideo;
+	premiercercle=NULL;
+
     cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE);
 	cvMoveWindow("Image originale", 50, 500);
 
 	while(i<25)
     {
         ptImage=captureImage(ptvideo);
-        createCircleRandomp(ptImage);
+        premier=createCircleRandomp(ptImage,premier);
         cvShowImage("Image originale", ptImage);
         cvWaitKey(1000);
         i=i+1;
