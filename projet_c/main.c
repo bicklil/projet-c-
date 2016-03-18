@@ -3,16 +3,21 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include <time.h> //pour le random
+
 #define RAYON 10
 #define NBCOULEUR 10
+#define CHANGEMENT 4 // changement du rayon et de la couleur
 
-typedef struct {int x;
+
+ struct cercle{int x;
                 int y;
                 int rayon;
-                cvScalar couleur;
-                int compteur=0;
-                cercle* suivant=NULL;
-                cercle* precedent=NULL;}cercle;
+                CvScalar couleur;
+                int compteur;
+                struct cercle* suivant;
+                struct cercle* precedent;};
+                
+typedef struct cercle cercle;
 
 cercle* ajoutCercle(cercle* premier,cercle* actuel)
 // on ajoute les nouveux cercles en tete de chaine
@@ -46,7 +51,7 @@ cercle* supprimerCercle(cercle* actuel,cercle* premier)
 
 }
 
-IplImage* captureImage(cvCapture* capture)
+IplImage* captureImage(CvCapture* capture)
 {
 	IplImage* ptImage = 0; // Pointeur sur une image OpenCV
 	ptImage = cvQueryFrame(capture);
@@ -60,13 +65,13 @@ IplImage* captureImage(cvCapture* capture)
 
 CvCapture* loadVideo()
 {
-    cvCapture* capture = NULL;
+    CvCapture* capture = NULL;
     while(!capture)
     {
-        capture=cvCreateCameraCapture(); // mettre l'adresse de la video connait pas
+        capture=cvCaptureFromCAM(0); // mettre l'adresse de la video connait pas
         if (!capture)
         {
-            printf("Ouverture du flux vid�o impossible !\n");
+            printf("Ouverture du flux vidéo impossible !\n");
         }
     }
     return capture;
@@ -74,15 +79,21 @@ CvCapture* loadVideo()
 cercle* createCircleRandomp(IplImage* image,cercle* premier)
 {
 	int hauteur,largeur;
-	int aleaLargeur,aleahauteur;
+	int aleaLargeur,aleaHauteur;
 	cercle *ptcercle;
+	ptcercle = (cercle*)malloc(sizeof(cercle));
 	hauteur = image->height;
 	largeur = image->width;
+    if (!ptcercle)
+        {
+            printf("Ouverture du flux vidéo impossible !\n");
+            exit(0);
+        }
 
 	aleaLargeur = (rand())%(largeur-RAYON);
-	aleahauteur = (rand())%(hauteur-RAYON);
+	aleaHauteur = (rand())%(hauteur-RAYON);
 
-	cvCircle(image, cvPoint ( aleaLargeur, aleahauteur ) ,RAYON,cvScalar( 20, 148, 20,0 ),1,0,0);
+	cvCircle(image, cvPoint ( aleaLargeur , aleaHauteur ) ,RAYON,cvScalar( 20, 148, 20,0 ),1,0,0);
 
 	ptcercle->x = aleaLargeur;
 	ptcercle->y = aleaHauteur;
@@ -95,44 +106,62 @@ cercle* createCircleRandomp(IplImage* image,cercle* premier)
 
 void modifColorandsizeCircle(cercle* ptcercle)
   {
-      	cvScalar couleur[NBCOULEUR] = (cvScalar( 20, 148, 20,0 ),cvScalar( 179, 255, 49,0 ),
+      	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar( 179, 255, 49,0 ),
                        cvScalar( 213, 220, 51,0 ),cvScalar( 233, 185, 52,0 ),
                        cvScalar( 246, 149, 51,0 ),cvScalar( 252, 107, 51,0 ),
                        cvScalar( 254, 107, 51,0 ),cvScalar( 254, 50, 49,0 ),
-                       cvScalar( 0x0, 0x0, 0x0,0 ),cvScalar( 0x0, 0x0, 0x0,0 ));
+                       cvScalar( 0x0, 0x0, 0x0,0 ),cvScalar( 0x0, 0x0, 0x0,0 )};
 
-        if((ptcercle->compteur%4) == 0) // A METTRE EN TEST AU MOMENT DE L'INCREMENTATION
+        if((ptcercle->compteur%CHANGEMENT) == 0) // A METTRE EN TEST AU MOMENT DE L'INCREMENTATION
         {
-            ptcercle->couleur = couleur[compteur/4];
+            ptcercle->couleur = couleur[ptcercle->compteur/CHANGEMENT];
         }
-       ptcercle->rayon = RAYON-compteur/4;// reduction du cercle
+       ptcercle->rayon = RAYON-ptcercle->compteur/CHANGEMENT;// reduction du cercle
   }
+  
+cercle* affichercercle(cercle* ptcercle, IplImage* ptImage)
+	{
+		cvCircle(ptImage, cvPoint ( ptcercle->x , ptcercle->y ) ,RAYON,cvScalar( 20, 148, 20,0 ),1,0,0);
+		cvShowImage("Image originale", ptImage);
+		return ptcercle->suivant;
+	}
 
 int main(void)
 {
 	int i = 0;
-	cvCapture* ptvideo;
+	CvCapture* ptvideo;
 	IplImage* ptImage;
-	cercle* premiercercle;
+	cercle* premiercercle,*actuel;
 
 	srand(time(NULL)); // initialisation de rand
-	ptvideo = loadVideo;
+
+	ptvideo = loadVideo();
 	premiercercle = NULL;
 
     cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE);
-	cvMoveWindow("Image originale", 50, 500);
+	cvMoveWindow("Image originale", 0, 0);
 
-	while(i < 25)
+	while(1)
     {
         ptImage = captureImage(ptvideo);
-        premier = createCircleRandomp(ptImage,premier);
         cvShowImage("Image originale", ptImage);
-        cvWaitKey(1000);
-        i = i+1;
+        //test
+        
+        if (!(i%5))
+        {
+      		premiercercle = createCircleRandomp(ptImage,premiercercle);
+        }
+        actuel=premiercercle;
+        while(actuel->suivant!=NULL)
+        {
+        	actuel=affichercercle(actuel,ptImage);
+        }
+         i++;
+         cvWaitKey(24);
     }
 
 	cvReleaseImage(&ptImage);
-	cvReleaseCapture(&capture);
+	cvReleaseCapture(&ptvideo);
 
 	return 0;
 }
