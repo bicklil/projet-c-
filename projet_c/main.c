@@ -1,36 +1,57 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui_c.h>
-#include <time.h> //pour le random
 
-#define RAYON 20
-#define NBCOULEUR 12
-#define CHANGEMENT 7 // changement du rayon et de la couleur
-#define FINDEVIE 49
+#include "traitement.h"
 
- struct cercle{int x;
-                int y;
-                int rayon;
-                CvScalar couleur;
-                int compteur;
-                struct cercle* suivant;
-                struct cercle* precedent;};
-                
-typedef struct cercle cercle;
 
-void choixNiveaux() // mettre les variables de difficultés en parametre en pointeur (changement,fin de vie,...)
+
+
+
+
+/*void callbackButton1(int state, void *pointer){ // fonction pour le choix de la difficulté #voir pour les bloquer quand on est plus dans la partie !
+
+        int *ptChoix = (int*)pointer;
+        printf("diff 1\n");
+        if (state == 1)
+        {*ptChoix = 1;}
+}
+        
+void callbackButton2(int state, void *pointer){
+
+        int *ptChoix = (int*)pointer;
+        printf("diff 2\n");
+        if (state == 1)
+        {*ptChoix = 2;}
+}
+        
+void callbackButton3(int state, void *pointer){
+
+        int *ptChoix = (int*)pointer;
+        printf("diff 3\n");
+        if (state == 1)
+        {*ptChoix = 3;}
+}
+
+void callbackButtonExit(int state, void *pointer){
+
+        int *ptExit = (int*)pointer;
+        *ptExit = 0;
+}*/
+
+void choixNiveaux(paradiff *niveau,int choix) 
 {
-	int choix;
-	printf("CHOIX DU NIVEAU :\n     - 1-FACILE\n     - 2-INTERMEDIARE\n     - 3-DIFFICILE\n");
-	scanf("%d",&choix);
+
 	switch(choix)
 	{
 		case 1:
+		niveau->difficulte = 50;
+		niveau->findevie = 77;
 		break;
 		case 2:
+		niveau->difficulte = 35;
+		niveau->findevie =63;
 		break ;
 		case 3:
+		niveau->difficulte = 20;
+		niveau->findevie =56 ;
 		break ;
 		default:
 		break ;
@@ -38,219 +59,103 @@ void choixNiveaux() // mettre les variables de difficultés en parametre en point
 }
 
 
-cercle* ajoutCercle(cercle* premier,cercle* actuel)  // A METTRE AU PROPRE
-// on ajoute les nouveux cercles en tete de chaine
+/*void affichagePreparezVous() // mais pourquoi ca marche pas :'( #latristesse
 {
-    if(premier != NULL)
-    {
-        (premier->precedent) = actuel;
-        (actuel->suivant) = premier;
-    }
-    else
-    {
-    	(actuel->suivant) = NULL; 
-    }
-    return actuel;
-}
+	cvDisplayOverlay("reglage","Attention Preparez vous !",1000);
+	cvWaitKey(1000);
+	cvDisplayOverlay("reglage","3",1000);
+	cvWaitKey(1000);
+	cvDisplayOverlay("reglage","2",1000);
+	cvWaitKey(1000);
+	cvDisplayOverlay("reglage","1",1000);
+	cvWaitKey(1000);
+	cvDisplayOverlay("reglage","c'est parti !",1000);
+}*/
 
-cercle* supprimerCercle(cercle* actuel) // A METTRE AU PROPRE
-// supprime le cercle de la chaine
-{
-	cercle* ptsuivant;
-    if ((actuel->precedent) == NULL)
-    {
-    	if ((actuel->suivant) == NULL)
-    	{
-    		return NULL;
-    	}
-    	else
-    	{
-    		ptsuivant = (actuel->suivant);
-        	((actuel->suivant)->precedent) = NULL;
-        	actuel = actuel->suivant;
-        	free(actuel);
-        	return ptsuivant;
-        }
-    }
-    if ((actuel->suivant) == NULL)
-    {
-        ((actuel->precedent)->suivant) = NULL;
-        free(actuel);
-        return actuel->precedent;
-    }
-    ((actuel->suivant)->precedent) = actuel->precedent;
-    ((actuel->precedent)->suivant) = actuel->suivant;
-    free(actuel);
-    return ptsuivant;
 
-}
-
-IplImage* captureImage(CvCapture* capture)
+/*void interface(int* precision,int* choix,int*exit) // interface pour choix de difficulté, affichage du score , bouton recommencer,
 {
-	IplImage* ptImage = 0; // Pointeur sur une image OpenCV
-	ptImage = cvQueryFrame(capture);
-	if(ptImage==NULL)
-	{
-		printf("Impossible d'ouvrir l'image");
-		exit(0);
-	}
-	return ptImage;
-}
-
-CvCapture* loadVideo()
-{
-    CvCapture* capture = NULL;
-    while(capture==NULL)
-    {
-        capture=cvCaptureFromCAM(0); // mettre l'adresse de la video connait pas
-        if (capture==NULL)
-        {
-            printf("Ouverture du flux vidéo impossible !\n");
-        }
-    }
-    return capture;
-}
-cercle* createCircleRandomp(IplImage* image,cercle* premier)
-{
-	int hauteur,largeur;
-	int aleaLargeur,aleaHauteur,aleapos;
-	cercle *ptcercle;
+	cvNamedWindow("reglage", CV_WINDOW_AUTOSIZE);
+	cvMoveWindow("reglage", 500 , 0);
 	
-	ptcercle = (cercle*)malloc(sizeof(cercle));
-	hauteur = image->height;
-	largeur = image->width;
-    
-    if (ptcercle==NULL)
-        {
-            printf("Ouverture du flux vidéo impossible !\n");
-            exit(0);
-        }
-    
-    aleapos = (rand())%(3);
-    switch(aleapos)// mise en position des bulles
-    {
-    	case 0://gauche
-			aleaLargeur = ((rand())%(20))+RAYON;
-			aleaHauteur = ((rand())%(hauteur-2*(RAYON)))+RAYON;
-			break;
-		case 1: //haut
-			aleaLargeur = ((rand())%(largeur-2*(RAYON)))+RAYON;
-			aleaHauteur = ((rand())%(20))+RAYON;
-			break;
-		case 2: //bas
-			aleaLargeur = largeur-((rand())%(20))-RAYON;
-			aleaHauteur = ((rand())%(hauteur-2*(RAYON)))+RAYON;
-			break;
-	}		
+	cvCreateTrackbar("precision","reglage",precision,200,NULL);
+	cvCreateButton("difficulte 1",callbackButton1,(void*)choix,CV_RADIOBOX,0); // choix des difficutées
+	cvCreateButton("difficulte 2",callbackButton2,(void*)choix,CV_RADIOBOX,0);
+	cvCreateButton("difficulte 3",callbackButton3,(void*)choix,CV_RADIOBOX,0);
 	
-	ptcercle->x = aleaLargeur;
-	ptcercle->y = aleaHauteur;
-	ptcercle->rayon = RAYON;
-	ptcercle->couleur = cvScalar( 20, 148, 20,0 );
-	ptcercle->compteur = 0;
-	ajoutCercle(premier,ptcercle);
+	cvCreateButton("EXIT",callbackButtonExit,(void*)exit,CV_PUSH_BUTTON,0); // bouton qui quit le prog (mettre le callback)
 	
-	return ptcercle;
+	cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE | CV_GUI_NORMAL); // mettre dans interface
+	cvMoveWindow("Image originale", 0, 0);
 
-}
-
-cercle*	modifiercercle(cercle* ptcercle, IplImage* ptImage)
-	{
-      	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar( 179, 255, 49,0 ),
-               cvScalar( 213, 220, 51,0 ),cvScalar( 233, 185, 52,0 ),
-               cvScalar( 246, 149, 51,0 ),cvScalar( 252, 107, 51,0 ),
-               cvScalar( 254, 107, 51,0 ),cvScalar( 254, 50, 49,0 ),
-               cvScalar( 0x0, 0x0, 0x0,0 ),cvScalar( 0x0, 0x0, 0x0,0 )};//couleur a revoir ca vva du vert au bleu ...
-		int modif=0;
-		cercle* premiercercle=ptcercle;
-		while(ptcercle!=NULL)
-		{	
-			modif=0;
-			(ptcercle->compteur)++;
-		    if ((ptcercle->compteur)==FINDEVIE)//destruction du mailllon
-		    {
-		    	if (premiercercle==ptcercle)
-		    	{
-		    		ptcercle=supprimerCercle(ptcercle);
-		    		premiercercle=ptcercle;
-		    	}
-				else
-				{
-					ptcercle=supprimerCercle(ptcercle);
-				}
-		    	modif=1;
-		    }
-		    if((((ptcercle->compteur)%CHANGEMENT)==0)&&(modif==0))//modification du maillon
-		    {
-				ptcercle->couleur = couleur[(ptcercle->compteur)/CHANGEMENT];
-				ptcercle->rayon = RAYON-(ptcercle->compteur)/(CHANGEMENT/2);
-				cvCircle(ptImage, cvPoint ( (ptcercle->x) , (ptcercle->y) ) ,(ptcercle->rayon),(ptcercle->couleur),-1,1,0);
-				cvShowImage("Image originale", ptImage);
-				if(ptcercle->suivant==NULL)
-				{
-					return premiercercle;
-				}
-				else
-				{
-					ptcercle=(ptcercle->suivant);
-					modif=1;	
-		    	}
-		    }
-		    if(modif==0);//incrementation du maillon 
-		    {
-				cvCircle(ptImage, cvPoint ( ptcercle->x , ptcercle->y ) ,ptcercle->rayon,ptcercle->couleur,-1,0,0);
-				cvShowImage("Image originale", ptImage);
-				ptcercle=ptcercle->suivant;	    
-		    }
-
-		}
-		return premiercercle;
-	}
 	
-int cercleToucher(cercle* ptcercle,int* score)
-{
-	int point_gagner;
-	point_gagner=FINDEVIE-(ptcercle->compteur);
-	*score=*score + point_gagner;
-	ptcercle=supprimerCercle(ptcercle);
-	return ptcercle;
-}
+}*/
+
+/*void affichageFinPartie(int* ptScore){
+
+	cvDisplayOverlay("reglage","votre score est de\n",1000);
+	cvWaitKey(1000);
+}*/
+
 
 int main(void)
 {
 	int i = -1;
-	//int score;
-	CvCapture* ptvideo;
+	int score;
+	int * ptScore;
+	int choix;
+	int * ptChoix;
+	paradiff niveau; // struct contenant les parametres du niveau choisit
+	paradiff* ptNiveau;
+	CvCapture* ptVideo;
 	IplImage* ptImage;
-	cercle* premiercercle;
-
-	srand(time(NULL)); // initialisation de rand
-
-	ptvideo = loadVideo();
-	premiercercle = NULL;
-
-    cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE);
-	cvMoveWindow("Image originale", 0, 0);
+	IplImage* ptInterieurCercle;
+	cercle* ptPremierCercle;
+	float precision;
 	
-	choixNiveaux();
+	srand(time(NULL)); // initialisation de rand
+	
+	choix=3;// choix fixé en brut a mettre avec l'interface
+	precision = 0;
+	ptVideo = loadVideo();
+	ptPremierCercle = NULL;
+	ptScore = &score;
+	ptNiveau = &niveau;
+	ptChoix = &choix;
+	score =0;
+	
+		//interface(ptPrecision,ptChoix,ptExit);
+		while(choix == 0){cvWaitKey(10);} // boutton pas check
 
-	while(1)
-    {
-    	i++;
-        ptImage = captureImage(ptvideo);
-        cvShowImage("Image originale", ptImage);        
-        if ((i%6)==0)
-        {
-      		premiercercle = createCircleRandomp(ptImage,premiercercle);
-      		printf("%d %p\n",i,premiercercle);
-        }
-        premiercercle = modifiercercle( premiercercle , ptImage ) ;
-        
-        cvWaitKey(24);
-    }
+	while(1) // boucle infinie du programme (mettre l'option quitt)
+    {	
+   			
 
+		choixNiveaux(ptNiveau,choix); 
+		//affichagePreparezVous(); 
+		
+		while((DUREEPARTIE-i) ){ 
+			i++;
+
+		    ptImage = captureImage(ptVideo);
+		    if (i%200000)//(rand()%niveau.difficulte) == 0) // trop aleatoire change a chaque boucle j'aime pas ca ^^
+		    {
+		  		ptPremierCercle = createCircleRandomp(ptImage,ptPremierCercle);
+		  		//printf("%d %p\n",i,ptPremierCercle);
+		  		ptInterieurCercle = creationImage(ptImage,ptPremierCercle->x,ptPremierCercle->y , ptPremierCercle->rayon);
+		    	ptPremierCercle->histo = calculHistogramme(ptInterieurCercle);
+		    	cvReleaseImage(&ptInterieurCercle);  // RELEASE
+		    }
+		    if(ptPremierCercle != NULL)
+		    {
+		    		ptPremierCercle = modifiercercle( ptPremierCercle , ptImage , ptScore, ptNiveau , precision) ;
+		    }
+		    cvWaitKey(50);
+		}
+    
+	}
 	cvReleaseImage(&ptImage);
-	cvReleaseCapture(&ptvideo);
+	cvReleaseCapture(&ptVideo);
 
 	return 0;
 }
