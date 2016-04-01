@@ -202,11 +202,8 @@ cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradi
                cvScalar( 254, 107, 51,0 ),cvScalar( 254, 50, 49,0 ),
                cvScalar( 0x0, 0x0, 0x0,0 ),cvScalar( 0x0, 0x0, 0x0,0 )};//couleur a revoir ca vva du vert au bleu ...
 		int modif = 0;
-		int qualite;
-		int *ptQualite;
-	
-		ptQualite = &qualite;
-		qualite=6;
+
+
 		cercle* ptPremierCercle = ptCercle;
 		while(ptCercle != NULL)
 		{	
@@ -252,7 +249,6 @@ cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradi
 							//cvShowImage("Image originale", ptImage);
 							if(ptCercle->suivant == NULL)
 							{
-								cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
 								return ptPremierCercle;
 							}
 							else
@@ -271,11 +267,9 @@ cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradi
 				}
 				else
 				{
-					cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
 					return NULL;
 				}
 			}
 		}
-		cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
 		return ptPremierCercle;
 	}

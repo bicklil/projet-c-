@@ -1,4 +1,4 @@
-
+#include "interface.h"
 #include "traitement.h"
 
 
@@ -43,15 +43,15 @@ void choixNiveaux(paradiff *niveau,int choix)
 	{
 		case 1:
 		niveau->difficulte = 50;
-		niveau->findevie = 77;
+		niveau->findevie = 63;
 		break;
 		case 2:
 		niveau->difficulte = 35;
-		niveau->findevie =63;
+		niveau->findevie =56;
 		break ;
 		case 3:
 		niveau->difficulte = 20;
-		niveau->findevie =56 ;
+		niveau->findevie =49 ;
 		break ;
 		default:
 		break ;
@@ -97,14 +97,30 @@ void choixNiveaux(paradiff *niveau,int choix)
 	cvWaitKey(1000);
 }*/
 
-
-int main(void)
+void actualisationImage(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQualite)	
 {
+	cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
+	gtk_image_set_from_file(GTK_IMAGE(ptImageGtk), "/dev/shm/image.png");
+
+}
+
+int main(int argc,char **argv)
+{
+	GtkWidget *ptTable;
+    GtkWidget *ptWindow;
+    GtkWidget *ptRadio0;
+    GtkWidget *ptRadio1;
+    GtkWidget *ptRadio2;
+    GtkWidget *ptRadio3;
+    GtkWidget *ptImageGtk;
+    GtkWidget *ptTexte;
+    GtkWidget *ptScoreGtk;
+    
 	int i = -1;
 	int score;
 	int * ptScore;
 	int choix;
-	int * ptChoix;
+	//int * ptChoix;
 	paradiff niveau; // struct contenant les parametres du niveau choisit
 	paradiff* ptNiveau;
 	CvCapture* ptVideo;
@@ -112,20 +128,37 @@ int main(void)
 	IplImage* ptInterieurCercle;
 	cercle* ptPremierCercle;
 	float precision;
+	int qualite = 3;
+	int *ptQualite;
 	
 	srand(time(NULL)); // initialisation de rand
 	
-	choix=3;// choix fixé en brut a mettre avec l'interface
+	choix=0;// choix fixé en brut a mettre avec l'interface
 	precision = 0;
 	ptVideo = loadVideo();
 	ptPremierCercle = NULL;
 	ptScore = &score;
 	ptNiveau = &niveau;
-	ptChoix = &choix;
+	//ptChoix = &choix;
+	ptQualite=&qualite;
 	score =0;
 	
-		//interface(ptPrecision,ptChoix,ptExit);
-		while(choix == 0){cvWaitKey(10);} // boutton pas check
+	gtk_init(&argc,&argv);
+	
+	ptTexte = gtk_label_new("");
+    ptScoreGtk = gtk_label_new("charScore");
+	
+	ptWindow = creationFenetre();	
+	ptRadio0 = creationButtonInvisible();
+	ptRadio1 = creationButtonDependant("difficulte 1",ptRadio0);
+	ptRadio2 = creationButtonDependant("difficulte 2",ptRadio0);
+	ptRadio3 = creationButtonDependant("difficulte 3",ptRadio0);
+	ptImageGtk = gtk_image_new_from_file("epic.jpg");
+	
+
+    ptTable=creationAffectationTable(ptImageGtk,ptWindow,ptTexte,ptRadio1,ptRadio2,ptRadio3, ptScoreGtk); // affection des widgets a la fenetre gtk
+	gtk_widget_show_all(ptWindow);
+	choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3); 
 
 	while(1) // boucle infinie du programme (mettre l'option quitt)
     {	
@@ -138,7 +171,7 @@ int main(void)
 			i++;
 
 		    ptImage = captureImage(ptVideo);
-		    if (i%200000)//(rand()%niveau.difficulte) == 0) // trop aleatoire change a chaque boucle j'aime pas ca ^^
+		    if (i%20==0)//(rand()%niveau.difficulte) == 0) // trop aleatoire change a chaque boucle j'aime pas ca ^^
 		    {
 		  		ptPremierCercle = createCircleRandomp(ptImage,ptPremierCercle);
 		  		//printf("%d %p\n",i,ptPremierCercle);
@@ -149,8 +182,12 @@ int main(void)
 		    if(ptPremierCercle != NULL)
 		    {
 		    		ptPremierCercle = modifiercercle( ptPremierCercle , ptImage , ptScore, ptNiveau , precision) ;
+
 		    }
-		    cvWaitKey(50);
+		    
+		    actualisationImage(ptImageGtk,ptImage,ptQualite);	
+		    gtk_main_iteration();
+		   	cvWaitKey(50);
 		}
     
 	}
