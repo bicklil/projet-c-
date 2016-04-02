@@ -104,10 +104,13 @@ void supprimeLesCerclesRestant(cercle *ptPremierCercle)
 	}
 }
 
-void actualisationImage(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQualite)	
+void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQualite, int score,GtkWidget *ptScoreGtk)	
 {
+	char texteScore[80];
 	cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
 	gtk_image_set_from_file(GTK_IMAGE(ptImageGtk), "/dev/shm/image.png");
+	creationTexteScore(score,texteScore);
+	gtk_label_set_text(GTK_LABEL(ptScoreGtk), texteScore	);
 
 }
 
@@ -137,6 +140,7 @@ int main(int argc,char **argv)
 	float precision;
 	int qualite = 3;
 	int *ptQualite;
+	char texteScore[80];
 	
 	srand(time(NULL)); // initialisation de rand
 	
@@ -152,8 +156,10 @@ int main(int argc,char **argv)
 	
 	gtk_init(&argc,&argv);
 	
+	creationTexteScore(score,texteScore);
+	
 	ptTexte = gtk_label_new("");
-    ptScoreGtk = gtk_label_new("charScore");
+    ptScoreGtk = gtk_label_new(texteScore);
 	
 	ptWindow = creationFenetre();	
 	ptRadio0 = creationButtonInvisible();
@@ -181,7 +187,7 @@ int main(int argc,char **argv)
 		    if (i%20==0)//(rand()%niveau.difficulte) == 0) // trop aleatoire change a chaque boucle j'aime pas ca ^^
 		    {
 		  		ptPremierCercle = createCircleRandomp(ptImage,ptPremierCercle);
-		  		printf("%d %p\n",i,ptPremierCercle);
+		  		//printf("%d %p\n",i,ptPremierCercle);
 		  		ptInterieurCercle = creationImage(ptImage,ptPremierCercle->x,ptPremierCercle->y , ptPremierCercle->rayon);
 		    	ptPremierCercle->histo = calculHistogramme(ptInterieurCercle);
 		    	cvReleaseImage(&ptInterieurCercle);  // RELEASE
@@ -192,15 +198,17 @@ int main(int argc,char **argv)
 
 		    }
 		    
-		    actualisationImage(ptImageGtk,ptImage,ptQualite);	
+		    actualisationInterface(ptImageGtk,ptImage,ptQualite,score,ptScoreGtk);	
+		    
 		    gtk_main_iteration();
 		   	cvWaitKey(50);
 		}
+		
 		supprimeLesCerclesRestant(ptPremierCercle);
 		ptPremierCercle = NULL;
 		affichageDifficulteEntrePartie(ptRadio0, ptRadio1, ptRadio2, ptRadio3, ptImageGtk);
 		choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3);
-		i=0;
+		i=0,score=0;
     
 	}
 	cvReleaseImage(&ptImage);

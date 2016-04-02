@@ -11,5 +11,6 @@
 	GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible);
 	int choixDifficulte(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3);
 	void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage);
+	void creationTexteScore(int score,char* scoreTexte);
 
 #endif

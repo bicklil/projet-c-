@@ -63,12 +63,16 @@ void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, Gt
 {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ptRadio0),TRUE);
 		gtk_image_set_from_file(GTK_IMAGE(ptImage), "epic.jpg");
-		printf("test");
 		gtk_widget_show(ptRadio1);
 		gtk_widget_show(ptRadio2);
 		gtk_widget_show(ptRadio3);
 		//gtk_main_iteration();
 		
+}
+
+void creationTexteScore(int score,char* scoreTexte)
+{
+ 	sprintf(scoreTexte,"Votre score est de : %d", score);
 }
 
 /*int main(int argc,char **argv)
