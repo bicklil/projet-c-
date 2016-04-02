@@ -196,12 +196,11 @@ cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier) // cree un cerc
 
 cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradiff *ptNiveau, float precision) // boucle generale sur les bulles (fin de vie, toucher , moddification)
 	{
-      	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar( 179, 255, 49,0 ),
-               cvScalar( 213, 220, 51,0 ),cvScalar( 233, 185, 52,0 ),
-               cvScalar( 246, 149, 51,0 ),cvScalar( 252, 107, 51,0 ),
-               cvScalar( 254, 107, 51,0 ),cvScalar( 254, 50, 49,0 ),
-               cvScalar( 0x0, 0x0, 0x0,0 ),cvScalar( 0x0, 0x0, 0x0,0 )};//couleur a revoir ca vva du vert au bleu ...
-		int modif = 0;
+      	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar(43,180,33,0),
+      		   cvScalar( 0, 255, 163,0 ), cvScalar( 0, 255, 253,0 ),cvScalar( 0, 167, 255,0 ),
+               cvScalar( 0, 103, 255,0 ),cvScalar( 0, 0, 255,0 ),
+               cvScalar( 0x0, 0x0, 0x0,0 )};
+		int modif = 0;//bool pour savoir si modif
 
 
 		cercle* ptPremierCercle = ptCercle;

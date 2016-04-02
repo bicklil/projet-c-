@@ -1,6 +1,6 @@
 #include "interface.h"
 #include "traitement.h"
-
+#include <unistd.h>
 
 
 
@@ -114,6 +114,24 @@ void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQua
 
 }
 
+void waitFor (unsigned int secs) {
+    time_t retTime = time(0) + secs;     // Get finishing time.
+    while (time(0) < retTime);    // Loop until it arrives.
+}
+
+void preparezVous(GtkWidget *ptTexte)
+{
+	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 3"	);
+	waitFor(1);
+	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 2"	);
+	waitFor(1);
+	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 1"	);
+	waitFor(1);
+	gtk_label_set_text(GTK_LABEL(ptTexte), "c'est parti !"	);
+	waitFor(1);
+	gtk_widget_hide(ptTexte);
+}
+
 int main(int argc,char **argv)
 {
 	GtkWidget *ptTable;
@@ -158,7 +176,7 @@ int main(int argc,char **argv)
 	
 	creationTexteScore(score,texteScore);
 	
-	ptTexte = gtk_label_new("");
+	ptTexte = gtk_label_new("Bienvenue sur EPIC BUBBLE");
     ptScoreGtk = gtk_label_new(texteScore);
 	
 	ptWindow = creationFenetre();	
@@ -176,9 +194,8 @@ int main(int argc,char **argv)
 	while(1) // boucle infinie du programme (mettre l'option quitt)
     {	
    			
-
 		choixNiveaux(ptNiveau,choix); 
-		//affichagePreparezVous(); 
+		preparezVous(ptTexte); // MARCHE PAS FULL BUG FULL PAS ACTUALISATION
 		
 		while((DUREEPARTIE-i) ){ 
 			i++;
@@ -206,7 +223,7 @@ int main(int argc,char **argv)
 		
 		supprimeLesCerclesRestant(ptPremierCercle);
 		ptPremierCercle = NULL;
-		affichageDifficulteEntrePartie(ptRadio0, ptRadio1, ptRadio2, ptRadio3, ptImageGtk);
+		affichageDifficulteEntrePartie(ptRadio0, ptRadio1, ptRadio2, ptRadio3, ptImageGtk,ptTexte);
 		choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3);
 		i=0,score=0;
     

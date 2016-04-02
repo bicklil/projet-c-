@@ -59,13 +59,15 @@ int choixDifficulte(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio
    	return choix;
 }
 
-void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage)
+void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte)
 {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ptRadio0),TRUE);
 		gtk_image_set_from_file(GTK_IMAGE(ptImage), "epic.jpg");
 		gtk_widget_show(ptRadio1);
 		gtk_widget_show(ptRadio2);
 		gtk_widget_show(ptRadio3);
+		gtk_label_set_text(GTK_LABEL(ptTexte),"Voulez vous recommencez ? Si oui choissisez à nouveau une difficultée");
+		gtk_widget_show(ptTexte);
 		//gtk_main_iteration();
 		
 }

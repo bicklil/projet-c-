@@ -8,7 +8,7 @@
 	#include <opencv2/imgproc/imgproc_c.h>
 	#include <time.h> //pour le random
 	#define RAYON 20 // radius de la bulle
-	#define NBCOULEUR 12 // nombre de couleur préparé pour les bulles voir modifiercerlce
+	#define NBCOULEUR 8 // nombre de couleur préparé pour les bulles voir modifiercerlce
 	#define CHANGEMENT 7
 	#define DUREEPARTIE 200 // chiffre au pif 
 	
