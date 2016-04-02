@@ -1,6 +1,7 @@
 #include "interface.h"
 
 GtkWidget *creationFenetre()
+/*cree une fenetre GTK*/
 {
 	GtkWidget *ptWindow;
 	ptWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -12,6 +13,7 @@ GtkWidget *creationFenetre()
 }
 
 GtkWidget *creationButtonInvisible()
+/*cree un bouton radio coche par defaut qui ne sera pas affiche*/
 {
 	GtkWidget *Button;
 	Button = gtk_radio_button_new_with_label(NULL, "selectionnez une difficulte");
@@ -20,6 +22,7 @@ GtkWidget *creationButtonInvisible()
 }
 
 GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible)
+/*cree un bouton radio qui rejoint le groupe de bouton du bouton invisible*/
 {
 	GtkWidget *Button;
 	Button = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(ButtonInvisible), str1);
@@ -27,6 +30,7 @@ GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible)
 }
 
 GtkWidget *creationAffectationTable(GtkWidget *ptImage, GtkWidget *ptWindow, GtkWidget* ptTexte,GtkWidget* ptBouton2, GtkWidget* ptBouton3, GtkWidget* ptBouton4, GtkWidget* ptScore)
+/*creation d'une table qui met en place tout les elements sur une grille*/
 {
 	GtkWidget *ptTable;
 	
@@ -45,6 +49,7 @@ GtkWidget *creationAffectationTable(GtkWidget *ptImage, GtkWidget *ptWindow, Gtk
 
 
 int choixDifficulte(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3)
+/*attends qu'une difficulte soit selectionné puis fait dispariatre les bouton*/
 {
 	int choix;
 	while(gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio0))==TRUE){gtk_main_iteration(); }
@@ -60,6 +65,7 @@ int choixDifficulte(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio
 }
 
 void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte)
+/*reaffiche les boutons de difficulte apres que la partie soit finie afon d'en refaire une autre*/
 {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ptRadio0),TRUE);
 		gtk_image_set_from_file(GTK_IMAGE(ptImage), "epic.jpg");
@@ -72,49 +78,7 @@ void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, Gt
 		
 }
 
-void creationTexteScore(int score,char* scoreTexte)
+void creationTexteScore(int score,char* scoreTexte) // cree un texte avec le score
 {
  	sprintf(scoreTexte,"Votre score est de : %d", score);
 }
-
-/*int main(int argc,char **argv)
-{
-	int choix;
-     Déclaration des widgets 
-    GtkWidget *pTable;
-    GtkWidget *ptWindow;
-    GtkWidget *ptRadio0;
-    GtkWidget *ptRadio1;
-    GtkWidget *ptRadio2;
-    GtkWidget *ptRadio3;
-    GtkWidget *ptImage;
-    GtkWidget *ptTexte;
-    GtkWidget *ptScore;
-    
-    gtk_init(&argc,&argv);
-    char *charScore;
-    
-    ptTexte = gtk_label_new("");
-    ptScore = gtk_label_new("charScore");
-	
-	creationFenetre(ptWindow);	
-    ptTable=creationAffectationTable(ptImage,ptWindow,ptTexte,ptRadio1,ptRadio2,ptRadio3, ptScore); // affection des widgets a la fenetre gtk
-	initialisationDifficulté(ptImage,ptRadio0,ptRadio1,ptRadio2,ptRadio3);
-    
-    gtk_widget_show_all(ptWindow);
-        
-    choix = choixDifficulté(ptRadio0,ptRadio1,ptRadio2,ptRadio3); 
-    
-    while(1)
-    {
-		actualisationImage(ptImage);	
-		gtk_main_iteration();
-	}
-
-    gtk_main();
-    Démarrage de la boucle événementielle 
-
-    
-    return EXIT_SUCCESS; 
-}*/
-

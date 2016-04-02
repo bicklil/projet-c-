@@ -3,40 +3,8 @@
 #include <unistd.h>
 
 
-
-
-
-/*void callbackButton1(int state, void *pointer){ // fonction pour le choix de la difficulté #voir pour les bloquer quand on est plus dans la partie !
-
-        int *ptChoix = (int*)pointer;
-        printf("diff 1\n");
-        if (state == 1)
-        {*ptChoix = 1;}
-}
-        
-void callbackButton2(int state, void *pointer){
-
-        int *ptChoix = (int*)pointer;
-        printf("diff 2\n");
-        if (state == 1)
-        {*ptChoix = 2;}
-}
-        
-void callbackButton3(int state, void *pointer){
-
-        int *ptChoix = (int*)pointer;
-        printf("diff 3\n");
-        if (state == 1)
-        {*ptChoix = 3;}
-}
-
-void callbackButtonExit(int state, void *pointer){
-
-        int *ptExit = (int*)pointer;
-        *ptExit = 0;
-}*/
-
 void choixNiveaux(paradiff *niveau,int choix) 
+/*initialise les variables de difficulte en fonction du choix*/
 {
 
 	switch(choix)
@@ -58,45 +26,8 @@ void choixNiveaux(paradiff *niveau,int choix)
 	}
 }
 
-
-/*void affichagePreparezVous() // mais pourquoi ca marche pas :'( #latristesse
-{
-	cvDisplayOverlay("reglage","Attention Preparez vous !",1000);
-	cvWaitKey(1000);
-	cvDisplayOverlay("reglage","3",1000);
-	cvWaitKey(1000);
-	cvDisplayOverlay("reglage","2",1000);
-	cvWaitKey(1000);
-	cvDisplayOverlay("reglage","1",1000);
-	cvWaitKey(1000);
-	cvDisplayOverlay("reglage","c'est parti !",1000);
-}*/
-
-
-/*void interface(int* precision,int* choix,int*exit) // interface pour choix de difficulté, affichage du score , bouton recommencer,
-{
-	cvNamedWindow("reglage", CV_WINDOW_AUTOSIZE);
-	cvMoveWindow("reglage", 500 , 0);
-	
-	cvCreateTrackbar("precision","reglage",precision,200,NULL);
-	cvCreateButton("difficulte 1",callbackButton1,(void*)choix,CV_RADIOBOX,0); // choix des difficutées
-	cvCreateButton("difficulte 2",callbackButton2,(void*)choix,CV_RADIOBOX,0);
-	cvCreateButton("difficulte 3",callbackButton3,(void*)choix,CV_RADIOBOX,0);
-	
-	cvCreateButton("EXIT",callbackButtonExit,(void*)exit,CV_PUSH_BUTTON,0); // bouton qui quit le prog (mettre le callback)
-	
-	cvNamedWindow("Image originale", CV_WINDOW_AUTOSIZE | CV_GUI_NORMAL); // mettre dans interface
-	cvMoveWindow("Image originale", 0, 0);
-
-	
-}*/
-
-/*void affichageFinPartie(int* ptScore){
-
-	cvDisplayOverlay("reglage","votre score est de\n",1000);
-	cvWaitKey(1000);
-}*/
 void supprimeLesCerclesRestant(cercle *ptPremierCercle)
+/*supprime tout les cercles en memoire*/
 {
 	while(ptPremierCercle !=NULL)
 	{
@@ -105,6 +36,7 @@ void supprimeLesCerclesRestant(cercle *ptPremierCercle)
 }
 
 void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQualite, int score,GtkWidget *ptScoreGtk)	
+/*actualise toute l'interface non fixe durant la partie*/
 {
 	char texteScore[80];
 	cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
@@ -115,11 +47,12 @@ void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQua
 }
 
 void waitFor (unsigned int secs) {
+/*permet de faire une pause de x sec*/
     time_t retTime = time(0) + secs;     // Get finishing time.
     while (time(0) < retTime);    // Loop until it arrives.
 }
 
-void preparezVous(GtkWidget *ptTexte)
+void preparezVous(GtkWidget *ptTexte) //marche pas sauf le hide
 {
 	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 3"	);
 	waitFor(1);
@@ -134,7 +67,7 @@ void preparezVous(GtkWidget *ptTexte)
 
 int main(int argc,char **argv)
 {
-	GtkWidget *ptTable;
+	//GtkWidget *ptTable;
     GtkWidget *ptWindow;
     GtkWidget *ptRadio0;
     GtkWidget *ptRadio1;
@@ -148,7 +81,6 @@ int main(int argc,char **argv)
 	int score;
 	int * ptScore;
 	int choix;
-	//int * ptChoix;
 	paradiff niveau; // struct contenant les parametres du niveau choisit
 	paradiff* ptNiveau;
 	CvCapture* ptVideo;
@@ -162,13 +94,12 @@ int main(int argc,char **argv)
 	
 	srand(time(NULL)); // initialisation de rand
 	
-	choix=0;// choix fixé en brut a mettre avec l'interface
+	choix=0;
 	precision = 0;
 	ptVideo = loadVideo();
 	ptPremierCercle = NULL;
 	ptScore = &score;
 	ptNiveau = &niveau;
-	//ptChoix = &choix;
 	ptQualite=&qualite;
 	score =0;
 	
@@ -187,7 +118,7 @@ int main(int argc,char **argv)
 	ptImageGtk = gtk_image_new_from_file("epic.jpg");
 	
 
-    ptTable=creationAffectationTable(ptImageGtk,ptWindow,ptTexte,ptRadio1,ptRadio2,ptRadio3, ptScoreGtk); // affection des widgets a la fenetre gtk
+    creationAffectationTable(ptImageGtk,ptWindow,ptTexte,ptRadio1,ptRadio2,ptRadio3, ptScoreGtk); // affection des widgets a la fenetre gtk
 	gtk_widget_show_all(ptWindow);
 	choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3); 
 

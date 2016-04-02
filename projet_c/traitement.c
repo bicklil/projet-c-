@@ -1,6 +1,6 @@
 #include "traitement.h"
 
-cercle* ajoutCercle(cercle* premier,cercle* actuel)  // A METTRE AU PROPRE
+cercle* ajoutCercle(cercle* premier,cercle* actuel) 
 // on ajoute les nouveux cercles en tete de chaine
 {
     if(premier != NULL)
@@ -16,7 +16,7 @@ cercle* ajoutCercle(cercle* premier,cercle* actuel)  // A METTRE AU PROPRE
 }
 
 
-cercle* supprimerCercle(cercle* actuel) // A METTRE AU PROPRE
+cercle* supprimerCercle(cercle* actuel) 
 // supprime le cercle de la chaine et retourne le cercle suivant s'il existe sinon return NULL
 {
 	cercle* ptsuivant;
@@ -50,7 +50,8 @@ cercle* supprimerCercle(cercle* actuel) // A METTRE AU PROPRE
 }
 
 
-IplImage* creationImage(IplImage* ptImage,int x,int y , int rayon)//A METTRE EN GRIS PLUS SIMPLE
+IplImage* creationImage(IplImage* ptImage,int x,int y , int rayon)
+/*recupere la zone de l'image au nieveau du cercle et la transformen en gris*/
 {
 	IplImage* ptNewImageGray;
 	IplImage* ptNewImage;
@@ -65,13 +66,14 @@ IplImage* creationImage(IplImage* ptImage,int x,int y , int rayon)//A METTRE EN 
 	cvResetImageROI(ptImage); // libere le roi
 	cvCvtColor(ptNewImage,ptNewImageGray,CV_RGB2GRAY); // met en gris
 	
-	cvReleaseImage(&ptNewImage);	 // RELEASE
+	cvReleaseImage(&ptNewImage);
 	
 	return ptNewImageGray;
 }
 
 
 CvHistogram* calculHistogramme(IplImage* ptImage)
+/*calcul l'histogramme d'une image en gris*/
 {	
 	int bins = 256;
     int hsize[] = {bins};
@@ -84,6 +86,7 @@ CvHistogram* calculHistogramme(IplImage* ptImage)
 
 
 int cercleToucherTest(IplImage* ptImage,cercle* ptCercle, float precision)
+/*compare deux histogramme pour voir si la zone du cercle a ete modifie*/
 {
 	double resultat;
 	IplImage* test;
@@ -93,11 +96,11 @@ int cercleToucherTest(IplImage* ptImage,cercle* ptCercle, float precision)
 	test = creationImage(ptImage,(ptCercle->x),(ptCercle->y),RAYON);
 	histo = calculHistogramme(test);
 	
-	cvReleaseImage(&test); // RELEASE
+	cvReleaseImage(&test);
 	
 	resultat = cvCompareHist(ptCercle->histo,histo,CV_COMP_CORREL);
 	
-	cvReleaseHist(&histo);  // RELEASE
+	cvReleaseHist(&histo);  
 	
 	if (resultat<precision)
 	{
@@ -112,6 +115,8 @@ int cercleToucherTest(IplImage* ptImage,cercle* ptCercle, float precision)
 
 
 cercle* cercleToucherPoint(cercle* ptCercle,int* ptScore,paradiff *ptNiveau) // incremente le compteur de socre en fonction de la duree de vie du cercle
+/*fonction qui ajoute les points des qu'un cercle est touche
+l'ajout de point depends de la duree d'existence su cercle*/
 {
 	int point_gagner;
 	point_gagner = (ptNiveau->findevie)-(ptCercle->compteur);
@@ -123,14 +128,14 @@ cercle* cercleToucherPoint(cercle* ptCercle,int* ptScore,paradiff *ptNiveau) // 
 
 IplImage* captureImage(CvCapture* capture) // recupere une frame du flux de la webcam
 {
-	IplImage* ptImage = 0; // Pointeur sur une image OpenCV
+	IplImage* ptImage = 0; 
 	ptImage = cvQueryFrame(capture);
 	if(ptImage == NULL)
 	{
 		printf("Impossible d'ouvrir l'image");
 		exit(0);
 	}
-	cvFlip(ptImage, NULL, 1	);// mets la cam dans le bon sens
+	cvFlip(ptImage, NULL, 1	);// mets l'image dans le bon sens
 	return ptImage;
 }
 
@@ -149,7 +154,8 @@ CvCapture* loadVideo()// recupere le flux de la webcam
 }
 
 
-cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier) // cree un cercle aleatoirement sur les bords de la video
+cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier)
+/*cree un cercle aleatoirement sur les bords de l'image*/
 {
 	int hauteur,largeur;
 	int aleaLargeur,aleaHauteur,aleapos;
@@ -195,6 +201,12 @@ cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier) // cree un cerc
 
 
 cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradiff *ptNiveau, float precision) // boucle generale sur les bulles (fin de vie, toucher , moddification)
+/*fonction qui modifie tous les cercles existants
+elle regarde dans un premier temps si un cercle est touche
+si oui on supprime le cercle on ajoute le score et on passe au cercle suivant
+sinon on regarde si le cercle est en fin de vie
+sinon on regarde si on est au moment ou le cercle doit etre reduit et changer de taille
+sinon on ne fait rien sur le cercle*/	
 	{
       	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar(43,180,33,0),
       		   cvScalar( 0, 255, 163,0 ), cvScalar( 0, 255, 253,0 ),cvScalar( 0, 167, 255,0 ),
@@ -245,7 +257,6 @@ cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradi
 							ptCercle->couleur = couleur[(ptCercle->compteur)/CHANGEMENT];
 							ptCercle->rayon = RAYON-(ptCercle->compteur)/(CHANGEMENT/2);
 							cvCircle(ptImage, cvPoint ( (ptCercle->x) , (ptCercle->y) ) ,(ptCercle->rayon),(ptCercle->couleur),-1,1,0);
-							//cvShowImage("Image originale", ptImage);
 							if(ptCercle->suivant == NULL)
 							{
 								return ptPremierCercle;
@@ -258,7 +269,6 @@ cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradi
 		    			else
 						{
 							cvCircle(ptImage, cvPoint ( ptCercle->x , ptCercle->y ) ,ptCercle->rayon,ptCercle->couleur,-1,0,0);
-							//cvShowImage("Image originale", ptImage);
 							ptCercle = ptCercle->suivant;	    
 		    			}
 
