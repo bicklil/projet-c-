@@ -96,6 +96,13 @@ void choixNiveaux(paradiff *niveau,int choix)
 	cvDisplayOverlay("reglage","votre score est de\n",1000);
 	cvWaitKey(1000);
 }*/
+void supprimeLesCerclesRestant(cercle *ptPremierCercle)
+{
+	while(ptPremierCercle !=NULL)
+	{
+		ptPremierCercle = supprimerCercle(ptPremierCercle);
+	}
+}
 
 void actualisationImage(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQualite)	
 {
@@ -174,7 +181,7 @@ int main(int argc,char **argv)
 		    if (i%20==0)//(rand()%niveau.difficulte) == 0) // trop aleatoire change a chaque boucle j'aime pas ca ^^
 		    {
 		  		ptPremierCercle = createCircleRandomp(ptImage,ptPremierCercle);
-		  		//printf("%d %p\n",i,ptPremierCercle);
+		  		printf("%d %p\n",i,ptPremierCercle);
 		  		ptInterieurCercle = creationImage(ptImage,ptPremierCercle->x,ptPremierCercle->y , ptPremierCercle->rayon);
 		    	ptPremierCercle->histo = calculHistogramme(ptInterieurCercle);
 		    	cvReleaseImage(&ptInterieurCercle);  // RELEASE
@@ -189,6 +196,11 @@ int main(int argc,char **argv)
 		    gtk_main_iteration();
 		   	cvWaitKey(50);
 		}
+		supprimeLesCerclesRestant(ptPremierCercle);
+		ptPremierCercle = NULL;
+		affichageDifficulteEntrePartie(ptRadio0, ptRadio1, ptRadio2, ptRadio3, ptImageGtk);
+		choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3);
+		i=0;
     
 	}
 	cvReleaseImage(&ptImage);
