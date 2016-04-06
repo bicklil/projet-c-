@@ -118,10 +118,11 @@ int cmps[3];
 int accl[3];
 int gyro[3];
 int temp;
+void obstacle();
+void rotation45(int sens);
 
 
-
-
+volatile int depart;
 const int  cs=12; //chip select 
 volatile int CPOS1=0;
 volatile int CPOS2=0;
@@ -199,35 +200,35 @@ void ISR2()
   else CPOS2--; 
 }
 
-void mot1(String s,int vit){
-  if (s == "1"){
+void mot1(int s,int vit){
+  if (s == 1){
     digitalWrite(8,LOW);
     digitalWrite(9,HIGH);
     analogWrite(6,vit);
   }
-  if (s == "2"){
+  if (s == 2){
     digitalWrite(9,LOW);
     digitalWrite(8,HIGH);
     analogWrite(6,vit);
   }
-  if (s == "0"){
+  if (s == 0){
     digitalWrite(9,LOW);
     digitalWrite(8,HIGH);
     analogWrite(6,0);
   }
 }
-void mot2(String s,int vit){
-  if (s == "2"){
+void mot2(int s,int vit){
+  if (s == 2){
     digitalWrite(4,LOW);
     digitalWrite(7,HIGH);
     analogWrite(5,vit);
   }
-  if (s == "1"){
+  if (s == 1){
     digitalWrite(7,LOW);
     digitalWrite(4,HIGH);
     analogWrite(5,vit);
   }
-  if (s == "0"){
+  if (s == 0){
     digitalWrite(7,LOW);
     digitalWrite(4,HIGH);
     analogWrite(5,0);
@@ -407,37 +408,93 @@ int moteur_manuel(){
    }}
    if (donnee[1]=="2")
    {
-     mot2(donnee[2],donnee[3].toInt());
+     mot2(donnee[2].toInt(),donnee[3].toInt());
      return 1;
    }
    if (donnee[1]=="1")
    {
-     mot1(donnee[2],donnee[3].toInt());
+     mot1(donnee[2].toInt(),donnee[3].toInt());
     return 1; 
    }
 }
 
 void suivre_ligne(){
-  
- if (analogRead(A4)>SEUIL and analogRead(A5)>SEUIL)
+
+  if ( (depart == 1))
   {
-      mot1("1",100);
-      mot2("1",100);}
+    mot1(0,150);
+    mot2(0,150);
+  }
+  if ((analogRead(A8)>SEUIL)  &&(analogRead(A7)>SEUIL)  &&(analogRead(A6)>SEUIL)  &&(analogRead(A5)>SEUIL)  &&(analogRead(A4)>SEUIL)  &&(analogRead(A3)>SEUIL)  &&(analogRead(A2)>SEUIL)  && (analogRead(A1)>SEUIL)&&(depart == 0))
+  {
+    depart = 1;
+    mot1(0,150);
+    mot2(0,150);
+  }
+  else
+  {
+ if ((analogRead(A4)>SEUIL) && (analogRead(A5)>SEUIL)&&(depart == 0))
+  {
+      mot1(1,150);
+      mot2(1,150);
+  }
  else
-   {if (analogRead(A4)<SEUIL and analogRead(A5)>SEUIL)
+   {if ((analogRead(A4)<SEUIL) && (analogRead(A5)>SEUIL)&&(depart == 0))
    {
-        mot1("1",75);
-        mot2("0",100);
+        mot1(1,100);
+        mot2(1,50);
    }
-     else {  
-       mot1("0",100);
-       mot2("1",75);
- }  
+     else {
+       if ((analogRead(A3) > SEUIL)|| (analogRead(A2) > SEUIL) || (analogRead(A1) > SEUIL)&&(depart == 0))
+       {
+            mot2(1,100);
+            mot1(1,50);
+            while((analogRead(A4)>SEUIL) && (analogRead(A5)>SEUIL)){}
+       }
+       else 
+       {
+       mot2(1,50);
+       mot1(1,100);
+       while ((analogRead(A4)>SEUIL) && (analogRead(A5)>SEUIL)){}
+ }  }}
 }}
+void rotation45(int sens)
+{
+  if (sens == 1)
+  {
+    mot1(1,100);
+    mot2(2,100);
+    delay(350);  // delai pour faire un angle de 45 degre avec 100 comme vitesse (A REVOIR)
+    mot1(0,0);
+    mot2(0,0);
+  }
+  if (sens == 0)
+  {
+    mot1(2,100);
+    mot2(1,100);
+    delay(350);  // delai pour faire un angle de 45 degre avec 100 comme vitesse (A REVOIR)
+    mot1(0,0);
+    mot2(0,0);
+  }
+}
+void obstacle()
+{
+  int distance1 = getRange();
+  int distance2 = 0;
+  if (distance1 < 50)
+  {
+    rotation45(1);
+    distance2 = getRange();
+    if (distance2 < distance1)
+    {
+      rotation45(0);
+    }
+  }
+}
 
 void setup()
 {
-  Wire.begin();                // join i2c bus (address optional for master)
+  //Wire.begin();                // join i2c bus (address optional for master)capte
   //Serial.begin(9600);          // start serial communication at 9600bps
   //pinMode(CA1,INPUT);pinMode(CA2,INPUT);pinMode(CB1,INPUT);pinMode(CB2,INPUT); //init de cpt
   //attachInterrupt(1,ISR1,FALLING);attachInterrupt(0,ISR2,FALLING); //init de cpt
@@ -445,27 +502,33 @@ void setup()
   pinMode(4,OUTPUT);pinMode(5,OUTPUT);pinMode(6,OUTPUT);pinMode(7,OUTPUT);pinMode(8,OUTPUT);pinMode(9,OUTPUT); // init de moteur
   
     //CapteurLigne//
-  pinMode(A1,INPUT);
-  pinMode(A2,INPUT);
-  pinMode(A3,INPUT);
-  pinMode(A4,INPUT);
-  pinMode(A5,INPUT);
-  pinMode(A6,INPUT);
-  pinMode(A7,INPUT);
-  pinMode(A8,INPUT); 
+//  pinMode(A1,INPUT);
+//  pinMode(A2,INPUT);
+//  pinMode(A3,INPUT);
+//  pinMode(A4,INPUT);
+//  pinMode(A5,INPUT);
+//  pinMode(A6,INPUT);
+//  pinMode(A7,INPUT);
+//  pinMode(A8,INPUT); 
   //RTC_init();
   //day(1-31), month(1-12), year(0-99), hour(0-23), minute(0-59), second(0-59)
   //SetTimeDate(9,04,15,15,20,0);
   // Clear the 'sleep' bit to start the sensor.
   //MPU9150_sendSensor(MPU9150_PWR_MGMT_1, 0);
   //MPU9150_setupCompass();
-  mot1("0",0);
-  mot2("0",0);
+    mot1(1,150);
+    mot2(1,150);
+    depart = 0;
+    delay(500);
+
 }
 
 void loop(){
   suivre_ligne();
-//  delay(25);
+  //obstacle();
+      //mot1(1,100);
+      //mot2(1,100);
+  //delay(1);
 //    moteur_manuel();
 //    delay(5000);
 //  Serial.print("RTCC,");      //print la premiere ligne (date / heure)
