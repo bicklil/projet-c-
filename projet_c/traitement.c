@@ -166,10 +166,10 @@ cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier)
 	largeur = ptImage->width;
     
     if (ptCercle == NULL)
-        {
-            printf("Ouverture du flux vidéo impossible !\n");
-            exit(0);
-        }
+    {
+        printf("Erreur memoire\n");
+        exit(0);
+    }
     
     aleapos = (rand())%(3);
     switch(aleapos)// mise en position des bulles
@@ -198,6 +198,9 @@ cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier)
 	
 	return ptCercle;
 }
+
+
+
 
 
 cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradiff *ptNiveau, float precision) // boucle generale sur les bulles (fin de vie, toucher , moddification)

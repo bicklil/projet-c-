@@ -6,7 +6,7 @@
 	#include <opencv2/core/core.hpp>
 	#include <opencv2/highgui/highgui_c.h>
 	#include <opencv2/imgproc/imgproc_c.h>
-	#include <time.h> //pour le random
+	#include <time.h>
 	#define RAYON 20 // radius de la bulle
 	#define NBCOULEUR 8 // nombre de couleur préparé pour les bulles voir modifiercerlce
 	#define CHANGEMENT 7
@@ -38,6 +38,6 @@
 	CvCapture* loadVideo();
 	cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier);
 	cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradiff *ptNiveau, float precision);
-	
+
 
 #endif
