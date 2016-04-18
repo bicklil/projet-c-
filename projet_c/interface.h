@@ -5,6 +5,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
+	#include "traitement.h"
 
 	
 	struct bestScore{
@@ -36,8 +37,8 @@
 	GtkWidget *creationFenetreFinPartie();
 	GtkWidget *creationButtonInvisible();
 	GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible);
-	int choixDifficulte(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3);
-	void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte);
+int choixDifficulte(paradiff *niveau, GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
+void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
 	void creationTexteScore(int score,char* scoreTexte);
 	void AjoutPseudo(GtkWidget *ptWindow, gchar* saisie, int meilleur);
 	void clickButton(GtkWidget *ptButton, gpointer data);

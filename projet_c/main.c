@@ -3,29 +3,6 @@
 #include <unistd.h>
 
 
-void choixNiveaux(paradiff *niveau, int choix) 
-/*initialise les variables de difficulte en fonction du choix*/
-{
-
-	switch(choix)
-	{
-		case 1:
-			niveau->difficulte = 50;
-			niveau->findevie = 63;
-			break;
-		case 2:
-			niveau->difficulte = 35;
-			niveau->findevie = 56;
-			break ;
-		case 3:
-			niveau->difficulte = 20;
-			niveau->findevie = 49 ;
-			break ;
-		default:
-			break ;
-	}
-}
-
 void supprimeLesCerclesRestant(cercle *ptPremierCercle)
 /*supprime tout les cercles en memoire*/
 {
@@ -119,28 +96,27 @@ int main(int argc,char **argv)
 	
 	ptWindow = creationFenetrePrincipal();	
 	ptRadio0 = creationButtonInvisible();
-	ptRadio1 = creationButtonDependant("difficulte 1",ptRadio0);
-	ptRadio2 = creationButtonDependant("difficulte 2",ptRadio0);
-	ptRadio3 = creationButtonDependant("difficulte 3",ptRadio0);
+	ptRadio1 = creationButtonDependant("baby mode",ptRadio0);
+	ptRadio2 = creationButtonDependant("normal",ptRadio0);
+	ptRadio3 = creationButtonDependant("Insanity",ptRadio0);
 	ptBoutonS = creationBoutonScore(ptWindow,bestScoreGrp);
 	ptImageGtk = gtk_image_new_from_file("epic.jpg");
 	
     creationAffectationTable(ptImageGtk,ptWindow,ptTexte,ptRadio1,ptRadio2,ptRadio3,ptBoutonS, ptScoreGtk); // affection des widgets a la fenetre gtk
 	gtk_widget_show_all(ptWindow);
 	
-	choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3);
+	choix = choixDifficulte(ptNiveau, ptRadio0,ptRadio1,ptRadio2,ptRadio3,ptTexte,ptBoutonS);
 	
 	while(1) // boucle infinie du programme si on ferme la fenetre le programme est quitte
     {	
    			
-		choixNiveaux(ptNiveau,choix); 
-		preparezVous(ptTexte); // MARCHE PAS FULL BUG FULL PAS ACTUALISATION
+		//preparezVous(ptTexte); // MARCHE PAS FULL BUG FULL PAS ACTUALISATION
 		
 		while((DUREEPARTIE-i) ){ 
 			i++;
 
 		    ptImage = captureImage(ptVideo);
-		    if (i%20==0)//(rand()%niveau.difficulte) == 0) // trop aleatoire change a chaque boucle j'aime pas ca ^^
+		    if (i%ptNiveau->difficulte==0)
 		    {
 		  		ptPremierCercle = createCircleRandomp(ptImage,ptPremierCercle);
 		  		ptInterieurCercle = creationImage(ptImage,ptPremierCercle->x,ptPremierCercle->y , ptPremierCercle->rayon);
@@ -166,8 +142,8 @@ int main(int argc,char **argv)
 
 		supprimeLesCerclesRestant(ptPremierCercle);
 		ptPremierCercle = NULL;
-		affichageDifficulteEntrePartie(ptRadio0, ptRadio1, ptRadio2, ptRadio3, ptImageGtk,ptTexte);
-		choix = choixDifficulte(ptRadio0,ptRadio1,ptRadio2,ptRadio3);
+		affichageDifficulteEntrePartie(ptRadio0, ptRadio1, ptRadio2, ptRadio3, ptImageGtk,ptTexte,ptBoutonS);
+		choix = choixDifficulte(ptNiveau, ptRadio0,ptRadio1,ptRadio2,ptRadio3,ptTexte,ptBoutonS);
 		i = 0;
 		score = 0;
     

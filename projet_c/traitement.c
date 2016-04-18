@@ -104,7 +104,6 @@ int cercleToucherTest(IplImage* ptImage,cercle* ptCercle, float precision)
 	
 	if (resultat<precision)
 	{
-		printf("TOUCH IN THE FACE\n");
 		return 1;
 	}
 	else
@@ -242,7 +241,6 @@ sinon on ne fait rien sur le cercle*/
 		    	{
 		    		if((ptCercle->compteur) == ptNiveau->findevie)
 		    		{
-		    			printf("DEADPOOL\n");
 		    			if (ptPremierCercle == ptCercle)
 		    			{
 		    				ptCercle = supprimerCercle(ptCercle);

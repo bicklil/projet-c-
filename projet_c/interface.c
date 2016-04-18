@@ -1,6 +1,5 @@
 #include "interface.h"
 
-
 void clickButton(GtkWidget *ptButton, gpointer data)
 {
  	donneePseudo* donneePseudoV = (donneePseudo*)data;
@@ -26,6 +25,11 @@ void quit_prog(GtkWidget *ptWindow , gpointer data)
 	exit(0);
 }
 
+void rien_faire(GtkWidget *ptWindow , gpointer data)
+{
+	
+}
+
 
 GtkWidget *creationFenetrePrincipal()
 /*cree une fenetre GTK*/
@@ -48,6 +52,7 @@ GtkWidget *creationFenetreFinPartie()
 	gtk_window_set_position(GTK_WINDOW(ptWindow), GTK_WIN_POS_CENTER);
 	gtk_window_set_default_size(GTK_WINDOW(ptWindow),300,500);
 	gtk_window_set_title(GTK_WINDOW(ptWindow),"Fin de partie");
+	g_signal_connect(G_OBJECT(ptWindow), "delete-event",G_CALLBACK(rien_faire),NULL);
 	return ptWindow;
 }
 
@@ -126,6 +131,7 @@ GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible)
 
 
 GtkWidget *creationAffectationTable(GtkWidget *ptImage, GtkWidget *ptWindow, GtkWidget* ptTexte,GtkWidget* ptBouton2, GtkWidget* ptBouton3, GtkWidget* ptBouton4,GtkWidget *ptBoutonS, GtkWidget* ptScore)
+
 /*creation d'une table qui met en place tout les elements sur une grille*/
 {
 	GtkWidget *ptTable;
@@ -134,6 +140,7 @@ GtkWidget *creationAffectationTable(GtkWidget *ptImage, GtkWidget *ptWindow, Gtk
 	gtk_container_add(GTK_CONTAINER(ptWindow), GTK_WIDGET(ptTable));
 	gtk_table_attach_defaults( GTK_TABLE(ptTable), ptTexte,0,6,0,1);
 	gtk_table_attach_defaults( GTK_TABLE(ptTable), ptBoutonS,7,9,0,1);
+	//gtk_label_set_text(GTK_LABEL(ptTable),"baby mode");
 	gtk_table_attach_defaults( GTK_TABLE(ptTable), ptBouton2,7,9,1,2);
 	gtk_table_attach_defaults( GTK_TABLE(ptTable), ptBouton3,7,9,2,3);
 	gtk_table_attach_defaults( GTK_TABLE(ptTable), ptBouton4,7,9,3,4);
@@ -339,7 +346,6 @@ struct bestScoreGroupe * lireMeilleurScorePremiereFois()
 			fscanf(fichier,"%d,%s ,%d/%d/%d\n",&(bestTemp->score),bestTemp->pseudo,&a,&b,&c);
 			sprintf(temp,"%d/%d/%d",a,b,c);
 			strcpy(bestTemp->date,temp); // il y a un truc qui va pas
-			printf("%d\n",diff);
 			switch(diff)
 			{
 				case 49 :
@@ -440,30 +446,48 @@ int verifieSiBestScore(struct bestScoreGroupe *bestScoreGroupeV,int  score,int d
 }
 
 
-int choixDifficulte(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3)
+int choixDifficulte(paradiff *niveau, GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptTexte, GtkWidget *ptBoutonS)
 /*attends qu'une difficulte soit selectionné puis fait dispariatre les bouton*/
 {
 	int choix;
 	while(gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio0))==TRUE){gtk_main_iteration(); }
 	/*recupere le bouton select*/
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio1))==TRUE) choix = 1;
-   	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio2))==TRUE) choix = 2;
-   	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio3))==TRUE) choix = 3;
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio1))==TRUE)
+	{
+		choix = 1;
+		niveau->difficulte = 8;
+		niveau->findevie = 35;
+	}
+   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio2))==TRUE)
+   {
+  	 	choix = 2;
+   		niveau->difficulte = 3;
+		niveau->findevie = 35;
+   }
+   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(ptRadio3))==TRUE)
+   {
+   		choix = 3;
+   		niveau->difficulte = 1;
+		niveau->findevie = 21;
+   }
     
-    gtk_widget_hide  (ptRadio3);
-   	gtk_widget_hide  (ptRadio2);
-   	gtk_widget_hide  (ptRadio1);
-   	return choix;
+   gtk_widget_hide  (ptRadio3);
+   gtk_widget_hide  (ptRadio2);
+   gtk_widget_hide  (ptRadio1);
+   gtk_widget_hide  (ptBoutonS);
+   gtk_widget_hide  (ptTexte);
+   return choix;
 }
 
 
-void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte)
+void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte, GtkWidget *ptBoutonS)
 /*reaffiche les boutons de difficulte apres que la partie soit finie afon d'en refaire une autre*/
 {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ptRadio0),TRUE);
 		gtk_image_set_from_file(GTK_IMAGE(ptImage), "epic.jpg");
 		gtk_widget_show(ptRadio1);
 		gtk_widget_show(ptRadio2);
+		gtk_widget_show(ptBoutonS);
 		gtk_widget_show(ptRadio3);
 		gtk_label_set_text(GTK_LABEL(ptTexte),"Voulez vous recommencez ? Si oui choissisez à nouveau une difficultée");
 		gtk_widget_show(ptTexte);
