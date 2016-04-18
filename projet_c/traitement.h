@@ -9,7 +9,6 @@
 	#include <time.h>
 	#define RAYON 20 // radius de la bulle
 	#define NBCOULEUR 8 // nombre de couleur préparé pour les bulles voir modifiercerlce
-	#define CHANGEMENT 7
 	#define DUREEPARTIE 200 // chiffre au pif 
 	
 	struct cercle{ int x; 

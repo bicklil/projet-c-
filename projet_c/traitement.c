@@ -253,10 +253,10 @@ sinon on ne fait rien sur le cercle*/
 		    		}
 		    		else
 		    		{
-		    			if(((ptCercle->compteur)%CHANGEMENT) == 0 )//modification du maillon
+		    			if(((ptCercle->compteur)%((ptNiveau->findevie)/NBCOULEUR)) == 0 )//modification du maillon
 		 			   {
-							ptCercle->couleur = couleur[(ptCercle->compteur)/CHANGEMENT];
-							ptCercle->rayon = RAYON-(ptCercle->compteur)/(CHANGEMENT/2);
+							ptCercle->couleur = couleur[(ptCercle->compteur)/((ptNiveau->findevie)/NBCOULEUR)];
+							ptCercle->rayon = RAYON-(ptCercle->compteur)/(((ptNiveau->findevie)/NBCOULEUR)/2);
 							cvCircle(ptImage, cvPoint ( (ptCercle->x) , (ptCercle->y) ) ,(ptCercle->rayon),(ptCercle->couleur),-1,1,0);
 							if(ptCercle->suivant == NULL)
 							{
