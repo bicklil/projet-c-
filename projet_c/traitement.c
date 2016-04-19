@@ -283,3 +283,12 @@ sinon on ne fait rien sur le cercle*/
 		}
 		return ptPremierCercle;
 	}
+	
+void supprimeLesCerclesRestant(cercle *ptPremierCercle)
+/*supprime tout les cercles en memoire*/
+{
+	while(ptPremierCercle != NULL)
+	{
+		ptPremierCercle = supprimerCercle(ptPremierCercle);
+	}
+}

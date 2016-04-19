@@ -37,8 +37,8 @@
 	GtkWidget *creationFenetreFinPartie();
 	GtkWidget *creationButtonInvisible();
 	GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible);
-int choixDifficulte(paradiff *niveau, GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
-void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
+	int choixDifficulte(paradiff *niveau, GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
+	void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
 	void creationTexteScore(int score,char* scoreTexte);
 	void AjoutPseudo(GtkWidget *ptWindow, gchar* saisie, int meilleur);
 	void clickButton(GtkWidget *ptButton, gpointer data);
@@ -46,5 +46,7 @@ void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, Gt
 	struct bestScoreGroupe * lireMeilleurScorePremiereFois();
 	GtkWidget *creationBoutonScore(GtkWidget *ptWindow,struct bestScoreGroupe *bestScoreGrp);
 	void changementBest(struct bestScoreGroupe *bestScoreGroupeV,int score,int choix,gchar* pseudo);
+	GtkWidget *creationFenetreInstruction();
+	void afficherInstructions(GtkWidget *ptWindow);
 	
 #endif

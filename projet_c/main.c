@@ -3,15 +3,6 @@
 #include <unistd.h>
 
 
-void supprimeLesCerclesRestant(cercle *ptPremierCercle)
-/*supprime tout les cercles en memoire*/
-{
-	while(ptPremierCercle != NULL)
-	{
-		ptPremierCercle = supprimerCercle(ptPremierCercle);
-	}
-}
-
 void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQualite, int score,GtkWidget *ptScoreGtk)	
 /*actualise toute l'interface non fixe durant la partie*/
 {
@@ -24,24 +15,6 @@ void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQua
 
 }
 
-void waitFor (unsigned int secs) {
-/*permet de faire une pause de x sec*/
-    time_t retTime = time(0) + secs;     // Get finishing time.
-    while (time(0) < retTime);    // Loop until it arrives.
-}
-
-void preparezVous(GtkWidget *ptTexte) //marche pas sauf le hide
-{
-	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 3"	);
-	waitFor(1);
-	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 2"	);
-	waitFor(1);
-	gtk_label_set_text(GTK_LABEL(ptTexte), "Attention la partie commence dans : 1"	);
-	waitFor(1);
-	gtk_label_set_text(GTK_LABEL(ptTexte), "c'est parti !"	);
-	waitFor(1);
-	gtk_widget_hide(ptTexte);
-}
 
 int main(int argc,char **argv)
 {
@@ -55,6 +28,7 @@ int main(int argc,char **argv)
     GtkWidget *ptScoreGtk;
     GtkWidget *ptWindowEnd;
     GtkWidget *ptBoutonS;
+    GtkWidget *ptWindowsInstruction;
     
     struct bestScoreGroupe * bestScoreGrp;
     
@@ -88,6 +62,7 @@ int main(int argc,char **argv)
 	bestScoreGrp = lireMeilleurScorePremiereFois() ;
 	
 	gtk_init(&argc,&argv);
+	ptWindowsInstruction = creationFenetreInstruction();
 	
 	creationTexteScore(score,texteScore);
 	
@@ -103,7 +78,9 @@ int main(int argc,char **argv)
 	ptImageGtk = gtk_image_new_from_file("epic.jpg");
 	
     creationAffectationTable(ptImageGtk,ptWindow,ptTexte,ptRadio1,ptRadio2,ptRadio3,ptBoutonS, ptScoreGtk); // affection des widgets a la fenetre gtk
+	
 	gtk_widget_show_all(ptWindow);
+	afficherInstructions(ptWindowsInstruction);
 	
 	choix = choixDifficulte(ptNiveau, ptRadio0,ptRadio1,ptRadio2,ptRadio3,ptTexte,ptBoutonS);
 	
