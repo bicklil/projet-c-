@@ -86,7 +86,7 @@ CvHistogram* calculHistogramme(IplImage* ptImage)
 
 
 int cercleToucherTest(IplImage* ptImage,cercle* ptCercle, float precision)
-/*compare deux histogramme pour voir si la zone du cercle a ete modifie*/
+/*compare deux histogrammes pour voir si la zone du cercle a ete modifie*/
 {
 	double resultat;
 	IplImage* test;
@@ -115,7 +115,7 @@ int cercleToucherTest(IplImage* ptImage,cercle* ptCercle, float precision)
 
 cercle* cercleToucherPoint(cercle* ptCercle,int* ptScore,paradiff *ptNiveau) // incremente le compteur de socre en fonction de la duree de vie du cercle
 /*fonction qui ajoute les points des qu'un cercle est touche
-l'ajout de point depends de la duree d'existence su cercle*/
+l'ajout de point depends de la duree d'existence du cercle*/
 {
 	int point_gagner;
 	point_gagner = (ptNiveau->findevie)-(ptCercle->compteur);
@@ -199,90 +199,88 @@ cercle* createCircleRandomp(IplImage* ptImage,cercle* ptPremier)
 }
 
 
-
-
-
-cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradiff *ptNiveau, float precision) // boucle generale sur les bulles (fin de vie, toucher , moddification)
+cercle*	modifiercercle(cercle* ptCercle, IplImage* ptImage, int* ptScore, paradiff *ptNiveau, float precision) 
 /*fonction qui modifie tous les cercles existants
 elle regarde dans un premier temps si un cercle est touche
 si oui on supprime le cercle on ajoute le score et on passe au cercle suivant
 sinon on regarde si le cercle est en fin de vie
 sinon on regarde si on est au moment ou le cercle doit etre reduit et changer de taille
 sinon on ne fait rien sur le cercle*/	
-	{
-      	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar(43,180,33,0),
-      		   cvScalar( 0, 255, 163,0 ), cvScalar( 0, 255, 253,0 ),cvScalar( 0, 167, 255,0 ),
-               cvScalar( 0, 103, 255,0 ),cvScalar( 0, 0, 255,0 ),
-               cvScalar( 0x0, 0x0, 0x0,0 )};
-		int modif = 0;//bool pour savoir si modif
+{
+  	CvScalar couleur[NBCOULEUR] = {cvScalar( 20, 148, 20,0 ),cvScalar(43,180,33,0),
+  		   cvScalar( 0, 255, 163,0 ), cvScalar( 0, 255, 253,0 ),cvScalar( 0, 167, 255,0 ),
+           cvScalar( 0, 103, 255,0 ),cvScalar( 0, 0, 255,0 ),
+           cvScalar( 0x0, 0x0, 0x0,0 )};
+	int modif = 0;//bool pour savoir si modif
 
 
-		cercle* ptPremierCercle = ptCercle;
-		while(ptCercle != NULL)
-		{	
-			modif = 0;
-			(ptCercle->compteur)++;
-			if (cercleToucherTest(ptImage,ptCercle,precision)==1) // test si on a toucher le cerlce
-			{
-				if (ptPremierCercle == ptCercle)
-		    		{
-						ptCercle=cercleToucherPoint(ptCercle,ptScore,ptNiveau);
-		   				ptPremierCercle = ptCercle;
-		   			}
-				else
+	cercle* ptPremierCercle = ptCercle;
+	while(ptCercle != NULL)
+	{	
+		modif = 0;
+		(ptCercle->compteur)++;
+		if (cercleToucherTest(ptImage,ptCercle,precision)==1) // test si on a toucher le cerlce
+		{
+			if (ptPremierCercle == ptCercle)
+	    		{
+					ptCercle=cercleToucherPoint(ptCercle,ptScore,ptNiveau);
+	   				ptPremierCercle = ptCercle;
+	   			}
+			else
+				{
+					ptCercle=cercleToucherPoint(ptCercle,ptScore,ptNiveau);
+				}
+			modif=1;	
+		}
+	    if ((modif == 0) )//destruction du mailllon
+	    {
+	    	if(ptCercle!=NULL)
+	    	{
+	    		if((ptCercle->compteur) == ptNiveau->findevie)
+	    		{
+	    			if (ptPremierCercle == ptCercle)
+	    			{
+	    				ptCercle = supprimerCercle(ptCercle);
+	    				ptPremierCercle = ptCercle;
+	    			}
+					else
 					{
-						ptCercle=cercleToucherPoint(ptCercle,ptScore,ptNiveau);
-					}
-				modif=1;	
-			}
-		    if ((modif == 0) )//destruction du mailllon
-		    {
-		    	if(ptCercle!=NULL)
-		    	{
-		    		if((ptCercle->compteur) == ptNiveau->findevie)
-		    		{
-		    			if (ptPremierCercle == ptCercle)
-		    			{
-		    				ptCercle = supprimerCercle(ptCercle);
-		    				ptPremierCercle = ptCercle;
-		    			}
+						ptCercle = supprimerCercle(ptCercle);
+					}	 		    			
+	    		}
+	    		else
+	    		{
+	    			if(((ptCercle->compteur)%((ptNiveau->findevie)/NBCOULEUR)) == 0 )//modification du maillon
+	 			   {
+						ptCercle->couleur = couleur[(ptCercle->compteur)/((ptNiveau->findevie)/NBCOULEUR)];
+						ptCercle->rayon = RAYON-(ptCercle->compteur)/(((ptNiveau->findevie)/NBCOULEUR)/2);
+						cvCircle(ptImage, cvPoint ( (ptCercle->x) , (ptCercle->y) ) ,(ptCercle->rayon),(ptCercle->couleur),-1,1,0);
+						if(ptCercle->suivant == NULL)
+						{
+							return ptPremierCercle;
+						}
 						else
 						{
-							ptCercle = supprimerCercle(ptCercle);
-						}	 		    			
-		    		}
-		    		else
-		    		{
-		    			if(((ptCercle->compteur)%((ptNiveau->findevie)/NBCOULEUR)) == 0 )//modification du maillon
-		 			   {
-							ptCercle->couleur = couleur[(ptCercle->compteur)/((ptNiveau->findevie)/NBCOULEUR)];
-							ptCercle->rayon = RAYON-(ptCercle->compteur)/(((ptNiveau->findevie)/NBCOULEUR)/2);
-							cvCircle(ptImage, cvPoint ( (ptCercle->x) , (ptCercle->y) ) ,(ptCercle->rayon),(ptCercle->couleur),-1,1,0);
-							if(ptCercle->suivant == NULL)
-							{
-								return ptPremierCercle;
-							}
-							else
-							{
-								ptCercle = (ptCercle->suivant);	
-		    				}
-		    			}
-		    			else
-						{
-							cvCircle(ptImage, cvPoint ( ptCercle->x , ptCercle->y ) ,ptCercle->rayon,ptCercle->couleur,-1,0,0);
-							ptCercle = ptCercle->suivant;	    
-		    			}
+							ptCercle = (ptCercle->suivant);	
+	    				}
+	    			}
+	    			else
+					{
+						cvCircle(ptImage, cvPoint ( ptCercle->x , ptCercle->y ) ,ptCercle->rayon,ptCercle->couleur,-1,0,0);
+						ptCercle = ptCercle->suivant;	    
+	    			}
 
-					}
-				}
-				else
-				{
-					return NULL;
 				}
 			}
+			else
+			{
+				return NULL;
+			}
 		}
-		return ptPremierCercle;
 	}
+	return ptPremierCercle;
+}
+
 	
 void supprimeLesCerclesRestant(cercle *ptPremierCercle)
 /*supprime tout les cercles en memoire*/

@@ -31,22 +31,24 @@
 				
 	typedef struct donneePseudo donneePseudo;
 	
-	int verifieSiBestScore(struct bestScoreGroupe *bestScoreGroupeV,int score,int diff);
 	GtkWidget *creationAffectationTable(GtkWidget *ptImage, GtkWidget *ptWindow, GtkWidget* ptTexte,GtkWidget* ptBouton2, GtkWidget* ptBouton3, GtkWidget* ptBouton4,GtkWidget *ptBoutonS, GtkWidget* ptScore);
 	GtkWidget *creationFenetrePrincipal();
 	GtkWidget *creationFenetreFinPartie();
 	GtkWidget *creationButtonInvisible();
+	GtkWidget *creationBoutonScore(GtkWidget *ptWindow,struct bestScoreGroupe *bestScoreGrp);
 	GtkWidget *creationButtonDependant(const gchar *str1,GtkWidget *ButtonInvisible);
+	GtkWidget *creationFenetreInstruction();
+	void creationTexteScore(int score,char* scoreTexte);
+
 	int choixDifficulte(paradiff *niveau, GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
 	void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, GtkWidget *ptRadio2, GtkWidget *ptRadio3, GtkWidget *ptImage, GtkWidget *ptTexte, GtkWidget *ptBoutonS);
-	void creationTexteScore(int score,char* scoreTexte);
-	void AjoutPseudo(GtkWidget *ptWindow, gchar* saisie, int meilleur);
-	void clickButton(GtkWidget *ptButton, gpointer data);
-	void ajoutScoreCsv(gchar* pseudo,int score,int diff);
-	struct bestScoreGroupe * lireMeilleurScorePremiereFois();
-	GtkWidget *creationBoutonScore(GtkWidget *ptWindow,struct bestScoreGroupe *bestScoreGrp);
-	void changementBest(struct bestScoreGroupe *bestScoreGroupeV,int score,int choix,gchar* pseudo);
-	GtkWidget *creationFenetreInstruction();
 	void afficherInstructions(GtkWidget *ptWindow);
+
+	void AjoutPseudo(GtkWidget *ptWindow, gchar* saisie, int meilleur);
+	void ajoutScoreCsv(gchar* pseudo,int score,int diff);
+	
+	struct bestScoreGroupe * lireMeilleurScorePremiereFois();
+	void changementBest(struct bestScoreGroupe *bestScoreGroupeV,int score,int choix,gchar* pseudo);
+	int verifieSiBestScore(struct bestScoreGroupe *bestScoreGroupeV,int score,int diff);
 	
 #endif

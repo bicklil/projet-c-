@@ -1,6 +1,8 @@
 #include "interface.h"
 
 void clickButton(GtkWidget *ptButton, gpointer data)
+/*fonction callback du bouton de l'interface d'ajout de pseudo
+elle permet de recupérer le pseudo entrer par l'utilisateur*/
 {
  	donneePseudo* donneePseudoV = (donneePseudo*)data;
  	const gchar* temp;
@@ -19,13 +21,14 @@ void clickButton(GtkWidget *ptButton, gpointer data)
     donneePseudoV->etat = 0;
 }
 
-
 void quit_prog(GtkWidget *ptWindow , gpointer data)
+/*fonction callback qui permet de fermer le programme quand la fenetre principale est fermée par la croix*/
 {
 	exit(0);
 }
 
 void rien_faire(GtkWidget *ptWindow , gpointer data)
+/*fonction callback qui empeche l'utilisation de la croix de fermeture*/
 {
 	
 }
@@ -68,6 +71,7 @@ GtkWidget *creationFenetreInstruction()
 }
 
 void afficherInstructions(GtkWidget *ptWindow)
+/*affiche une fenetre avec les instructions du jeu*/
 {
 	GtkWidget *ptLabel;
 	GtkWidget *ptBox;
@@ -176,6 +180,7 @@ GtkWidget *creationAffectationTable(GtkWidget *ptImage, GtkWidget *ptWindow, Gtk
 
 
 void ajoutScoreCsv(gchar pseudo[],int score,int diff)
+/*ajout du score dans un fichier csv sous le format difficultee/score/pseudo/date */
 {
 	time_t timer;
 	struct tm *date; 
@@ -191,11 +196,11 @@ void ajoutScoreCsv(gchar pseudo[],int score,int diff)
 	
 	fprintf(fichier,"%d,%d,%s ,%d/%d/%d \n",diff,score,pseudo,date->tm_mday,(date->tm_mon)+1,(date->tm_year)+1900);	
 	fclose(fichier);
-	//ecriture des score sous le format diff score pseudo date
 }
 
 
 void afficherBestScore(GtkWidget *ptBouton,gpointer data)
+/*fonction callback qui affiche une fenetre avec les meilleurs scores*/
 {
 	GtkWidget *ptWindow;
 	GtkWidget *ptTable;
@@ -281,6 +286,7 @@ void afficherBestScore(GtkWidget *ptBouton,gpointer data)
 
 
 GtkWidget *creationBoutonScore(GtkWidget *ptWindow,struct bestScoreGroupe *bestScoreGrp)
+/*cree un bouton score*/
 {
 	GtkWidget *ptBouton;
 	ptBouton = gtk_button_new_with_label("affichez les meilleurs scores");
@@ -290,6 +296,7 @@ GtkWidget *creationBoutonScore(GtkWidget *ptWindow,struct bestScoreGroupe *bestS
 
 
 struct bestScoreGroupe *bestScoreDefaut()
+/*fonction qui initialise les struct bestScore*/
 {
 	bestScore *bestDiff1,*bestDiff2,*bestDiff3;
 	struct bestScoreGroupe *bestScoreGrp;
@@ -297,26 +304,26 @@ struct bestScoreGroupe *bestScoreDefaut()
 	bestDiff1 = (bestScore *) malloc (sizeof(bestScore));
 	if (bestDiff1 == NULL)
 	{
-		printf("erreur pas de memoire");
+		printf("erreur  memoire");
 		exit(0);
 	}
 	bestDiff2 = (bestScore *) malloc (sizeof(bestScore));
 	if (bestDiff2 == NULL)
 	{
-		printf("erreur pas de memoire");
+		printf("erreur memoire");
 		exit(0);
 	}
 	bestDiff3 = (bestScore *) malloc (sizeof(bestScore));
 	if (bestDiff3 == NULL)
 	{
-		printf("erreur pas de memoire");
+		printf("erreur memoire");
 		exit(0);
 	}
 		
 	bestScoreGrp = (struct bestScoreGroupe *) malloc (sizeof(struct bestScoreGroupe));
 	if (bestScoreGrp == NULL)
 	{
-		printf("erreur pas de memoire");
+		printf("erreur memoire");
 		exit(0);
 	}	
 	
@@ -338,6 +345,7 @@ struct bestScoreGroupe *bestScoreDefaut()
 
 
 struct bestScoreGroupe * lireMeilleurScorePremiereFois()
+/*fonction qui parcourt le fichier score.csv et recupere le meilleur score de chaque difficultee*/
 {
 	// on cree 4 structure best score , 3 pour les vrais best score de chaque diff et le dernier c'est le temp
 	bestScore *bestDiff1,*bestDiff2,*bestDiff3,*bestTemp;
@@ -361,7 +369,7 @@ struct bestScoreGroupe * lireMeilleurScorePremiereFois()
 	
 	
 	fichier = fopen("score.csv","r");		
-	if (fichier != NULL)
+	if (fichier != NULL)// si le fichier existe pas on utilise les scores par defaut
 	{
 		while ((diff = fgetc(fichier)) != EOF)
 		{
@@ -411,13 +419,14 @@ struct bestScoreGroupe * lireMeilleurScorePremiereFois()
 		bestScoreGrp->bestDiff2 = bestDiff2;
 		bestScoreGrp->bestDiff3 = bestDiff3;
 		free(bestTemp);	
-	}
+	}	
 
 	return bestScoreGrp;
 }
 
 
 void changementBest(struct bestScoreGroupe *bestScoreGroupeV,int score,int choix,gchar pseudo[])
+/*change la struct bestScoreGroupe si l'utilisateur a fait un meilleur score*/
 {
 	time_t timer;
 	struct tm *date;
@@ -442,12 +451,13 @@ void changementBest(struct bestScoreGroupe *bestScoreGroupeV,int score,int choix
 			sprintf(bestScoreGroupeV->bestDiff3->date,"%d/%d/%d",date->tm_mday,(date->tm_mon)+1,(date->tm_year)+1900);	
 			break;
 		default :
-		break;
+			break;
 	}
 }
 
 
 int verifieSiBestScore(struct bestScoreGroupe *bestScoreGroupeV,int  score,int diff)
+/*verifie si l'utilisateur a fait le meilleur score*/
 {
 	switch(diff)
 	{
@@ -500,6 +510,7 @@ int choixDifficulte(paradiff *niveau, GtkWidget *ptRadio0, GtkWidget *ptRadio1, 
    gtk_widget_hide  (ptRadio1);
    gtk_widget_hide  (ptBoutonS);
    gtk_widget_hide  (ptTexte);
+   
    return choix;
 }
 
@@ -520,6 +531,7 @@ void affichageDifficulteEntrePartie(GtkWidget *ptRadio0, GtkWidget *ptRadio1, Gt
 
 
 void creationTexteScore(int score,char* scoreTexte) // cree un texte avec le score
+/*convertit le score en str*/
 {
  	sprintf(scoreTexte,"Votre score est de : %d", score);
 }

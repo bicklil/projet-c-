@@ -10,9 +10,9 @@ void actualisationInterface(GtkWidget *ptImageGtk, IplImage *ptImage,int * ptQua
 
 	cvSaveImage("/dev/shm/image.png", ptImage, ptQualite);
 	gtk_image_set_from_file(GTK_IMAGE(ptImageGtk), "/dev/shm/image.png");
+
 	creationTexteScore(score,texteScore);
 	gtk_label_set_text(GTK_LABEL(ptScoreGtk), texteScore);
-
 }
 
 
@@ -36,7 +36,7 @@ int main(int argc,char **argv)
 	int score;
 	int * ptScore;
 	int choix;
-	paradiff niveau; // struct contenant les parametres du niveau choisit
+	paradiff niveau; 
 	paradiff* ptNiveau;
 	CvCapture* ptVideo;
 	IplImage* ptImage;
@@ -62,6 +62,7 @@ int main(int argc,char **argv)
 	bestScoreGrp = lireMeilleurScorePremiereFois() ;
 	
 	gtk_init(&argc,&argv);
+	
 	ptWindowsInstruction = creationFenetreInstruction();
 	
 	creationTexteScore(score,texteScore);
@@ -86,21 +87,19 @@ int main(int argc,char **argv)
 	
 	while(1) // boucle infinie du programme si on ferme la fenetre le programme est quitte
     {	
-   			
-		//preparezVous(ptTexte); // MARCHE PAS FULL BUG FULL PAS ACTUALISATION
 		
 		while((DUREEPARTIE-i) ){ 
 			i++;
 
 		    ptImage = captureImage(ptVideo);
-		    if (i%ptNiveau->difficulte==0)
+		    if (i%ptNiveau->difficulte==0) // timing d'ajout
 		    {
 		  		ptPremierCercle = createCircleRandomp(ptImage,ptPremierCercle);
 		  		ptInterieurCercle = creationImage(ptImage,ptPremierCercle->x,ptPremierCercle->y , ptPremierCercle->rayon);
 		    	ptPremierCercle->histo = calculHistogramme(ptInterieurCercle);
 		    	cvReleaseImage(&ptInterieurCercle);  
 		    }
-		    if(ptPremierCercle != NULL)
+		    if(ptPremierCercle != NULL) // on modifie les cercles si ils existent
 		    {
 		    		ptPremierCercle = modifiercercle( ptPremierCercle , ptImage , ptScore, ptNiveau , precision) ;
 
@@ -111,6 +110,7 @@ int main(int argc,char **argv)
 		    gtk_main_iteration();
 		   	cvWaitKey(1);
 		}
+		//partie finie on reinitialise tout et on sauvegarde le score
 		ptWindowEnd = creationFenetreFinPartie();
 		meilleur = verifieSiBestScore(bestScoreGrp,score,choix);
 		AjoutPseudo(ptWindowEnd,saisie,meilleur);
@@ -123,8 +123,8 @@ int main(int argc,char **argv)
 		choix = choixDifficulte(ptNiveau, ptRadio0,ptRadio1,ptRadio2,ptRadio3,ptTexte,ptBoutonS);
 		i = 0;
 		score = 0;
-    
-	}
+    }
+	
 	cvReleaseImage(&ptImage);
 	cvReleaseCapture(&ptVideo);
 	free(bestScoreGrp);

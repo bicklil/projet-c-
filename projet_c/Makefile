@@ -14,4 +14,5 @@ interface.o : interface.c interface.h
 clean:
 	rm -rf *~
 	rm -rf *.o
-	rm -rf *.exe		
+	rm -rf *.exe
+	rm -rf *.csv
